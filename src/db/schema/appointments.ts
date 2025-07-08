@@ -15,7 +15,7 @@ import { users } from "./users";
 export const appointments = pgTable("appointments", {
   id: uuid("id").primaryKey().defaultRandom(),
 
-  userId: uuid("user_id")
+  userId: text("user_id")
     .references(() => users.id)
     .notNull(),
   patientId: uuid("patient_id")

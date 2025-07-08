@@ -14,7 +14,7 @@ export const patintSexEnun = pgEnum("patient_sex", ["male", "female"]);
 
 export const patients = pgTable("patients", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .references(() => users.id)
     .notNull(),
   name: text("name").notNull(),

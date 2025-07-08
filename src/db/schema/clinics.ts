@@ -4,7 +4,7 @@ import { users } from "./users";
 
 export const clinics = pgTable("clinics", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .references(() => users.id)
     .notNull(), // dentista dono da clínica
   name: text("name").notNull(),

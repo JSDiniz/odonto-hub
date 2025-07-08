@@ -11,7 +11,7 @@ import { users } from "./users";
 
 export const landingPages = pgTable("landing_pages", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .references(() => users.id)
     .notNull(),
 

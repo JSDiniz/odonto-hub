@@ -9,7 +9,7 @@ export const notifications = pgTable("notifications", {
   appointmentId: uuid("appointment_id")
     .references(() => appointments.id)
     .notNull(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .references(() => users.id)
     .notNull(),
   patientId: uuid("patient_id")

@@ -13,7 +13,7 @@ export const payments = pgTable("payments", {
   patientId: uuid("patient_id")
     .references(() => patients.id)
     .notNull(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .references(() => users.id)
     .notNull(),
 

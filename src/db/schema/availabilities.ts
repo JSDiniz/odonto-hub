@@ -1,10 +1,17 @@
-import { integer, pgTable, time, timestamp, uuid } from "drizzle-orm/pg-core";
+import {
+  integer,
+  pgTable,
+  text,
+  time,
+  timestamp,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import { users } from "./users";
 
 export const availabilities = pgTable("availabilities", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .references(() => users.id)
     .notNull(),
   weekDay: integer("week_day").notNull(), // 0 = domingo, 1 = segunda, ..., 6 = sábado

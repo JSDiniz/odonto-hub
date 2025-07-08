@@ -5,7 +5,7 @@ import { users } from "./users";
 
 export const beforeAfterPhotos = pgTable("before_after_photos", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
+  userId: text("user_id")
     .references(() => users.id)
     .notNull(),
   landingPageId: uuid("landing_page_id")
