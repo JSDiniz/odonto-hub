@@ -51,8 +51,6 @@ const SignUpForm = () => {
   });
 
   async function onSubmit(values: z.infer<typeof registerSchema>) {
-    console.log("values", values);
-
     await authClient.signUp.email(
       {
         name: values.name,
