@@ -11,10 +11,11 @@ import { patients } from "./patients";
 import { payments } from "./payments";
 import { services } from "./services";
 import { users } from "./users";
+import { usersToClinics } from "./usersToClinics";
 
 // USERS
 export const usersRelations = relations(users, ({ many }) => ({
-  clinics: many(clinics),
+  usersToClinics: many(usersToClinics),
   services: many(services),
   patients: many(patients),
   appointments: many(appointments),
@@ -25,12 +26,21 @@ export const usersRelations = relations(users, ({ many }) => ({
   beforeAfterPhotos: many(beforeAfterPhotos),
 }));
 
-// CLINICS
-export const clinicsRelations = relations(clinics, ({ one, many }) => ({
+// USERS_TO_CLINICS
+export const usersToClinicsRelations = relations(usersToClinics, ({ one }) => ({
   user: one(users, {
-    fields: [clinics.userId],
+    fields: [usersToClinics.userId],
     references: [users.id],
   }),
+  clinic: one(clinics, {
+    fields: [usersToClinics.clinicId],
+    references: [clinics.id],
+  }),
+}));
+
+// CLINICS
+export const clinicsRelations = relations(clinics, ({ many }) => ({
+  usersToClinics: many(usersToClinics),
   appointments: many(appointments),
 }));
 

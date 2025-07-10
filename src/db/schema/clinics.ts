@@ -1,12 +1,7 @@
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-import { users } from "./users";
-
 export const clinics = pgTable("clinics", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: text("user_id")
-    .references(() => users.id)
-    .notNull(), // dentista dono da clínica
   name: text("name").notNull(),
   address: text("address").notNull(),
   phone: text("phone"),
