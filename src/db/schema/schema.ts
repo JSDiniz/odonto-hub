@@ -13,6 +13,7 @@ import { sessions } from "./sessions";
 import { users } from "./users";
 import { usersToClinics } from "./usersToClinics";
 import { verifications } from "./verifications";
+export * from "./relations";
 
 export {
   accounts,

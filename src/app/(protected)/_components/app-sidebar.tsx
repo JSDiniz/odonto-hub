@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,6 +58,9 @@ const items = [
 
 const AppSidebar = () => {
   const router = useRouter();
+  const result = authClient.useSession();
+
+  console.log("response: ", result.data?.user.clinic.name);
 
   const handleSignOut = async () => {
     await authClient.signOut({
@@ -101,7 +105,19 @@ const AppSidebar = () => {
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              <DropdownMenuTrigger>Clíica</DropdownMenuTrigger>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton size="lg">
+                  <Avatar>
+                    <AvatarFallback>CCS</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="text-sm">{result.data?.user.clinic.name}</p>
+                    <p className="text-muted-foreground text-sm">
+                      {result.data?.user.clinic.email}
+                    </p>
+                  </div>
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={handleSignOut}>
                   <LogOut />
