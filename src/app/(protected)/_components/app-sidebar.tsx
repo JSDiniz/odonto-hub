@@ -110,9 +110,9 @@ const AppSidebar = () => {
                     <AvatarFallback>CCS</AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-sm">{result.data?.user.clinic.name}</p>
+                    <p className="text-sm">{result.data?.user?.clinic?.name}</p>
                     <p className="text-muted-foreground text-sm">
-                      {result.data?.user.clinic.email}
+                      {result.data?.user?.clinic?.email}
                     </p>
                   </div>
                 </SidebarMenuButton>

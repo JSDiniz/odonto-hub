@@ -1,18 +1,19 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-import LoginForm from "./components/login-form";
-import SignUpForm from "./components/sign-up-form";
-import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { auth } from "@/lib/auth";
+
+import LoginForm from "./components/login-form";
+import SignUpForm from "./components/sign-up-form";
+
 const AuthenticationPage = async () => {
   const session = await auth.api.getSession({
-    headers: await headers()
-  })
+    headers: await headers(),
+  });
 
   if (session?.user) {
-    redirect("/dashboard")
+    redirect("/dashboard");
   }
 
   return (
