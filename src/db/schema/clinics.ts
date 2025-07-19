@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 export const clinics = pgTable("clinics", {
-  id: uuid("id").primaryKey().defaultRandom(),
+  id: uuid("id").defaultRandom().primaryKey(),
   name: text("name").notNull(),
   address: text("address").notNull(),
   phone: text("phone"),
