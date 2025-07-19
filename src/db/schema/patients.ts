@@ -1,28 +1,21 @@
-import {
-  date,
-  pgEnum,
-  pgTable,
-  text,
-  timestamp,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { pgEnum, pgTable, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
-import { users } from "./users";
+import { clinics } from "./clinics";
 
 // enun
 export const patintSexEnun = pgEnum("patient_sex", ["male", "female"]);
 
 export const patients = pgTable("patients", {
   id: uuid("id").primaryKey().defaultRandom(),
-  userId: text("user_id")
-    .references(() => users.id)
+
+  clinicId: uuid("clinic_id")
+    .references(() => clinics.id, { onDelete: "cascade" })
     .notNull(),
+
   name: text("name").notNull(),
-  email: text("email"),
-  phone: text("phone"),
-  birthDate: date("birth_date"),
+  email: text("email").notNull(),
+  phoneNumber: text("phone_number").notNull(),
   sex: patintSexEnun("sex").notNull(),
-  notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()

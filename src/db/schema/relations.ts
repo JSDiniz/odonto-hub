@@ -1,22 +1,15 @@
 import { relations } from "drizzle-orm";
 
 import { appointments } from "./appointments";
-
 import { clinics } from "./clinics";
-
+import { doctors } from "./doctors";
 import { patients } from "./patients";
-
-import { services } from "./services";
 import { users } from "./users";
 import { usersToClinics } from "./usersToClinics";
 
 // USERS
 export const usersRelations = relations(users, ({ many }) => ({
   usersToClinics: many(usersToClinics),
-  services: many(services),
-  patients: many(patients),
-  appointments: many(appointments),
-
 }));
 
 // USERS_TO_CLINICS
@@ -33,46 +26,41 @@ export const usersToClinicsRelations = relations(usersToClinics, ({ one }) => ({
 
 // CLINICS
 export const clinicsRelations = relations(clinics, ({ many }) => ({
-  usersToClinics: many(usersToClinics),
+  doctors: many(doctors),
+  patients: many(patients),
   appointments: many(appointments),
+  usersToClinics: many(usersToClinics),
+}));
+
+// DOCTORS
+export const doctorsRelations = relations(doctors, ({ one }) => ({
+  clinics: one(clinics, {
+    fields: [doctors.clinicId],
+    references: [clinics.id],
+  }),
 }));
 
 // PATIENTS
-export const patientsRelations = relations(patients, ({ one, many }) => ({
-  user: one(users, {
-    fields: [patients.userId],
-    references: [users.id],
-  }),
-  appointments: many(appointments),
-
-}));
-
-// SERVICES
-export const servicesRelations = relations(services, ({ one, many }) => ({
-  user: one(users, {
-    fields: [services.userId],
-    references: [users.id],
+export const patientsRelations = relations(patients, ({ many, one }) => ({
+  clinics: one(clinics, {
+    fields: [patients.clinicId],
+    references: [clinics.id],
   }),
   appointments: many(appointments),
 }));
 
 // APPOINTMENTS
 export const appointmentsRelations = relations(appointments, ({ one }) => ({
-  user: one(users, {
-    fields: [appointments.userId],
-    references: [users.id],
+  clinic: one(clinics, {
+    fields: [appointments.clinicId],
+    references: [clinics.id],
   }),
   patient: one(patients, {
     fields: [appointments.patientId],
     references: [patients.id],
   }),
-  service: one(services, {
-    fields: [appointments.serviceId],
-    references: [services.id],
+  doctors: one(doctors, {
+    fields: [appointments.doctorId],
+    references: [doctors.id],
   }),
-  clinic: one(clinics, {
-    fields: [appointments.clinicId],
-    references: [clinics.id],
-  }),
-
 }));
