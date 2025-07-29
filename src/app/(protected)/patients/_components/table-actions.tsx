@@ -1,6 +1,20 @@
 import { EditIcon, MoreVerticalIcon, TrashIcon } from "lucide-react";
+import { useAction } from "next-safe-action/hooks";
 import { useState } from "react";
+import { toast } from "sonner";
 
+import { deletePatient } from "@/app/actions/delete-patient";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import {
@@ -21,34 +35,75 @@ interface PatientsActionsProps {
 
 const PatientsTableActions = ({ patient }: PatientsActionsProps) => {
   const [upsertDialogIsOpen, setUpsertDialogIsOpen] = useState(false);
+  const [deleteDialogIsOpen, setDeleteDialogIsOpen] = useState(false);
+
+  const deletePatientAction = useAction(deletePatient, {
+    onSuccess: () => {
+      toast.success("Paciente deletado com sucesso.");
+      setDeleteDialogIsOpen(false);
+    },
+    onError: () => {
+      toast.error("Erro ao deletar paciente.");
+    },
+  });
+
+  const handleDeletePatientClick = () => {
+    deletePatientAction.execute({ id: patient.id });
+  };
 
   return (
-    <Dialog open={upsertDialogIsOpen} onOpenChange={setUpsertDialogIsOpen}>
-      <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Button variant="ghost" size="icon">
-            <MoreVerticalIcon className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuLabel>{patient.name}</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setUpsertDialogIsOpen(true)}>
-            <EditIcon />
-            Editar
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <TrashIcon />
-            Excluir
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+    <>
+      <Dialog open={upsertDialogIsOpen} onOpenChange={setUpsertDialogIsOpen}>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <Button variant="ghost" size="icon">
+              <MoreVerticalIcon className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>{patient.name}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setUpsertDialogIsOpen(true)}>
+              <EditIcon />
+              Editar
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setDeleteDialogIsOpen(true)}>
+              <TrashIcon />
+              Excluir
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-      <UpsertPatientForm
-        patient={patient}
-        onSuccess={() => setUpsertDialogIsOpen(false)}
-      />
-    </Dialog>
+        <UpsertPatientForm
+          patient={patient}
+          onSuccess={() => setUpsertDialogIsOpen(false)}
+        />
+      </Dialog>
+
+      <AlertDialog
+        open={deleteDialogIsOpen}
+        onOpenChange={setDeleteDialogIsOpen}
+      >
+        <AlertDialogTrigger asChild />
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Tem certeza que deseja deletar esse paciente?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Essa ação não pode ser revertida. Isso irá deletar o paciente e
+              todos os dados relacionados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeletePatientClick}>
+              Deletar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 
