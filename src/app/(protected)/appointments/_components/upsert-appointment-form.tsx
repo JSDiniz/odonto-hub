@@ -148,6 +148,23 @@ export default function UpsertAppointmentForm({
     });
   };
 
+  const isDateAvailable = (date: Date) => {
+    if (!selectedDoctorId) return false;
+
+    const selectedDoctor = doctors.find(
+      (doctor) => doctor.id === selectedDoctorId,
+    );
+
+    if (!selectedDoctor) return false;
+
+    const dayOfWeek = date.getDay();
+
+    return (
+      dayOfWeek >= selectedDoctor?.availableFromWeekDay &&
+      dayOfWeek <= selectedDoctor?.availableToWeekDay
+    );
+  };
+
   const isDateTimeEnabled = selectedPatientId && selectedDoctorId;
 
   return (
@@ -279,7 +296,7 @@ export default function UpsertAppointmentForm({
                         setOpen(false);
                       }}
                       disabled={(date) =>
-                        date < new Date() || date < new Date("1900-01-01")
+                        date < new Date() || !isDateAvailable(date)
                       }
                       captionLayout="dropdown"
                     />
