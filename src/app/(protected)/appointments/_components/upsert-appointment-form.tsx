@@ -33,9 +33,7 @@ import {
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -50,12 +48,15 @@ const formSchema = z.object({
   }),
 });
 
+import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import { ptBR } from "date-fns/locale";
+import dayjs from "dayjs";
 import { useAction } from "next-safe-action/hooks";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { getAvailableTime } from "@/app/actions/get-availble-time";
 import { upsertAppointment } from "@/app/actions/upsert-appointment";
 import { appointments } from "@/db/schema/appointments";
 import { doctors } from "@/db/schema/doctors";
@@ -89,13 +90,23 @@ export default function UpsertAppointmentForm({
     },
   });
 
-  const watchedDoctorId = form.watch("doctorId");
-  const watchedPatientId = form.watch("patientId");
+  const selectedDoctorId = form.watch("doctorId");
+  const selectedPatientId = form.watch("patientId");
+  const selectedDate = form.watch("date");
+
+  const { data: availableTime } = useQuery({
+    queryKey: ["available-times", selectedDate, selectedDoctorId],
+    queryFn: () =>
+      getAvailableTime({
+        date: dayjs(selectedDate).format("YYYY-MM-DD"),
+        doctorId: selectedDoctorId,
+      }),
+  });
 
   useEffect(() => {
-    if (watchedDoctorId) {
+    if (selectedDoctorId) {
       const selectedDoctor = doctors.find(
-        (doctor) => doctor.id === watchedDoctorId,
+        (doctor) => doctor.id === selectedDoctorId,
       );
 
       if (selectedDoctor) {
@@ -105,7 +116,7 @@ export default function UpsertAppointmentForm({
         );
       }
     }
-  }, [watchedDoctorId, doctors, form]);
+  }, [selectedDoctorId, doctors, form]);
 
   useEffect(() => {
     if (isOpen) {
@@ -137,7 +148,7 @@ export default function UpsertAppointmentForm({
     });
   };
 
-  const isDateTimeEnabled = watchedPatientId && watchedDoctorId;
+  const isDateTimeEnabled = selectedPatientId && selectedDoctorId;
 
   return (
     <DialogContent>
@@ -288,7 +299,7 @@ export default function UpsertAppointmentForm({
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
-                  disabled={!isDateTimeEnabled}
+                  disabled={!isDateTimeEnabled || !selectedDate}
                 >
                   <FormControl>
                     <SelectTrigger className="w-full">
@@ -296,47 +307,11 @@ export default function UpsertAppointmentForm({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Manhã</SelectLabel>
-                      <SelectItem value="08:00:00">08:00</SelectItem>
-                      <SelectItem value="08:30:00">08:30</SelectItem>
-                      <SelectItem value="09:00:00">09:00</SelectItem>
-                      <SelectItem value="09:30:00">09:30</SelectItem>
-                      <SelectItem value="10:00:00">10:00</SelectItem>
-                      <SelectItem value="10:30:00">10:30</SelectItem>
-                      <SelectItem value="11:00:00">11:00</SelectItem>
-                      <SelectItem value="11:30:00">11:30</SelectItem>
-                      <SelectItem value="12:00:00">12:00</SelectItem>
-                      <SelectItem value="12:30:00">12:30</SelectItem>
-                    </SelectGroup>
-                    <SelectGroup>
-                      <SelectLabel>Tarde</SelectLabel>
-                      <SelectItem value="13:00:00">13:00</SelectItem>
-                      <SelectItem value="13:30:00">13:30</SelectItem>
-                      <SelectItem value="14:00:00">14:00</SelectItem>
-                      <SelectItem value="14:30:00">14:30</SelectItem>
-                      <SelectItem value="15:00:00">15:00</SelectItem>
-                      <SelectItem value="15:30:00">15:30</SelectItem>
-                      <SelectItem value="16:00:00">16:00</SelectItem>
-                      <SelectItem value="16:30:00">16:30</SelectItem>
-                      <SelectItem value="17:00:00">17:00</SelectItem>
-                      <SelectItem value="17:30:00">17:30</SelectItem>
-                      <SelectItem value="18:00:00">18:00</SelectItem>
-                      <SelectItem value="18:30:00">18:30</SelectItem>
-                    </SelectGroup>
-                    <SelectGroup>
-                      <SelectLabel>Noite</SelectLabel>
-                      <SelectItem value="19:00:00">19:00</SelectItem>
-                      <SelectItem value="19:30:00">19:30</SelectItem>
-                      <SelectItem value="20:00:00">20:00</SelectItem>
-                      <SelectItem value="20:30:00">20:30</SelectItem>
-                      <SelectItem value="21:00:00">21:00</SelectItem>
-                      <SelectItem value="21:30:00">21:30</SelectItem>
-                      <SelectItem value="22:00:00">22:00</SelectItem>
-                      <SelectItem value="22:30:00">22:30</SelectItem>
-                      <SelectItem value="23:00:00">23:00</SelectItem>
-                      <SelectItem value="23:30:00">23:30</SelectItem>
-                    </SelectGroup>
+                    {availableTime?.data?.map((time) => (
+                      <SelectItem key={time.value} value={time.value}>
+                        {time.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormMessage />
