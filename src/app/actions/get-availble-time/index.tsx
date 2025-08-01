@@ -59,7 +59,7 @@ export const getAvailableTime = actionClient
       where: eq(appointments.doctorId, parsedInput.doctorId),
     });
 
-    const appointetsOnSelectedDate = appointmentsThatDay
+    const appointmentsOnSelectedDate = appointmentsThatDay
       .filter((appointment) => {
         return dayjs(appointment.date).isSame(parsedInput.date, "day");
       })
@@ -97,7 +97,7 @@ export const getAvailableTime = actionClient
     return doctorTimeSlots.map((time) => {
       return {
         value: time,
-        available: appointetsOnSelectedDate.includes(time),
+        available: !appointmentsOnSelectedDate.includes(time),
         label: time.substring(0, 5),
       };
     });
