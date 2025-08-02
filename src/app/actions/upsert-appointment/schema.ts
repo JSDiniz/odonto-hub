@@ -6,7 +6,7 @@ export const upsertAppointmentSchema = z.object({
   doctorId: z.string().uuid(),
   appointmentPriceInCents: z.number().min(1),
   date: z.date(),
-  time: z.string().optional(),
+  time: z.string(),
 });
 
 export type UpsertAppointmentSchema = z.infer<typeof upsertAppointmentSchema>;

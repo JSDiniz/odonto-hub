@@ -9,6 +9,7 @@ import { appointments } from "@/db/schema/appointments";
 import { auth } from "@/lib/auth";
 import { actionClient } from "@/lib/safe-action";
 
+import { getAvailableTime } from "../get-availble-time";
 import { upsertAppointmentSchema } from "./schema";
 
 export const upsertAppointment = actionClient
@@ -26,17 +27,26 @@ export const upsertAppointment = actionClient
       throw new Error("Clinic not found");
     }
 
-    // Combinar data e hora para criar o timestamp
-    if (!parsedInput.time) {
-      throw new Error("Horário não informado");
+    const availableTimes = await getAvailableTime({
+      doctorId: parsedInput.doctorId,
+      date: dayjs(parsedInput.date).format("YYYY-MM-DD"),
+    });
+
+    if (!availableTimes?.data) {
+      throw new Error("No available times");
     }
-    const [hourStr, minuteStr] = parsedInput.time.split(":");
-    const hour = parseInt(hourStr, 10);
-    const minute = parseInt(minuteStr, 10);
+
+    const isTimeAvailable = availableTimes.data?.some(
+      (time) => time.value === parsedInput.time && time.available,
+    );
+
+    if (!isTimeAvailable) {
+      throw new Error("Time not available");
+    }
 
     const appointmentDateTime = dayjs(parsedInput.date)
-      .set("hour", hour)
-      .set("minute", minute)
+      .set("hour", parseInt(parsedInput.time?.split(":")[0]))
+      .set("minute", parseInt(parsedInput.time?.split(":")[1]))
       .toDate();
 
     await db
