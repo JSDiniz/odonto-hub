@@ -49,20 +49,19 @@ export const upsertAppointment = actionClient
       .set("minute", parseInt(parsedInput.time?.split(":")[1]))
       .toDate();
 
-    await db
-      .insert(appointments)
-      .values({
-        ...parsedInput,
-        id: parsedInput?.id,
-        clinicId: session?.user.clinic?.id,
-        date: appointmentDateTime,
-      })
-      .onConflictDoUpdate({
-        target: [appointments.id],
-        set: {
-          ...parsedInput,
-          date: appointmentDateTime,
-        },
-      });
+    await db.insert(appointments).values({
+      ...parsedInput,
+      id: parsedInput?.id,
+      clinicId: session?.user.clinic?.id,
+      date: appointmentDateTime,
+    });
+    // .onConflictDoUpdate({
+    //   target: [appointments.id],
+    //   set: {
+    //     ...parsedInput,
+    //     date: appointmentDateTime,
+    //   },
+    // });
     revalidatePath("/appointments");
+    revalidatePath("/dashboard");
   });

@@ -2,10 +2,10 @@
 
 import { addMonths, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { parseAsIsoDate, useQueryState } from "nuqs";
-import { useMemo, useState } from "react";
-import type { DateRange, Matcher } from "react-day-picker";
+import * as React from "react";
+import { DateRange } from "react-day-picker";
 
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -16,27 +16,9 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
-type DateRangePickerProps = {
-  value?: DateRange;
-  onChange?: (range: DateRange | undefined) => void;
-  placeholder?: string;
-  className?: string;
-  buttonClassName?: string;
-  isDisabled?: boolean;
-  disabled?: Matcher | Matcher[];
-  numberOfMonths?: number;
-};
+function DatePicker({ className }: React.HTMLAttributes<HTMLDivElement>) {
+  const [open, setOpen] = React.useState(false);
 
-function DatePicker({
-  value,
-  onChange,
-  placeholder = "Período",
-  className,
-  buttonClassName,
-  isDisabled,
-  disabled,
-  numberOfMonths = 2,
-}: DateRangePickerProps) {
   const [from, setFrom] = useQueryState(
     "from",
     parseAsIsoDate.withDefault(new Date()),
@@ -46,96 +28,64 @@ function DatePicker({
     parseAsIsoDate.withDefault(addMonths(new Date(), 1)),
   );
 
-  const [open, setOpen] = useState(false);
-  const [isSelectingRange, setIsSelectingRange] = useState(false);
-  const [internalRange, setInternalRange] = useState<DateRange | undefined>(
-    value ?? { from, to },
-  );
-
-  const range = value ?? internalRange;
-
-  // Função para formatar no padrão "20 ago 2025"
-  const formatShortDate = (date: Date) =>
-    format(date, "dd MMM yyyy", { locale: ptBR });
-
-  const label = useMemo(() => {
-    if (range?.from && range?.to) {
-      return `${formatShortDate(range.from)} - ${formatShortDate(range.to)}`;
-    }
-    if (range?.from && !range?.to) {
-      return `${formatShortDate(range.from)} - ...`;
-    }
-    return placeholder;
-  }, [range, placeholder]);
-
-  const handleSelect = (nextRange: DateRange | undefined) => {
-    if (!onChange) {
-      setInternalRange(nextRange);
-    }
-    onChange?.(nextRange);
-
-    // Atualiza setFrom e setTo
-    if (nextRange?.from) {
-      setFrom(nextRange.from);
-    }
-    if (nextRange?.to) {
-      setTo(nextRange.to);
+  const handleDateSelect = (dateRange: DateRange | undefined) => {
+    if (dateRange?.from) {
+      setFrom(dateRange.from, { shallow: false });
     }
 
-    const selectingFirstDate = nextRange?.from && !nextRange?.to;
-    const sameDaySelection =
-      nextRange?.from &&
-      nextRange?.to &&
-      nextRange.from.getTime() === nextRange.to.getTime();
-
-    if (selectingFirstDate || sameDaySelection) {
-      setIsSelectingRange(true);
-      setOpen(true);
-    } else if (nextRange?.from && nextRange?.to) {
-      setIsSelectingRange(false);
-      setOpen(false);
+    if (dateRange?.to) {
+      setTo(dateRange.to);
     }
   };
 
+  const date = {
+    from,
+    to,
+  };
+
   return (
-    <div className={cn("w-full", className)}>
-      <Popover
-        modal
-        open={open}
-        onOpenChange={(next) => {
-          if (!next && isSelectingRange) return;
-          setOpen(next);
-        }}
-      >
+    <div className={cn("grid gap-2", className)}>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
+            id="date"
             variant="outline"
             className={cn(
-              "w-full justify-start text-left font-normal",
-              !range?.from && "text-muted-foreground",
-              buttonClassName,
+              "justify-start text-left font-normal",
+              !date && "text-muted-foreground",
             )}
-            disabled={isDisabled}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {label}
+            <CalendarIcon />
+            {date?.from ? (
+              date.to ? (
+                <>
+                  {format(date.from, "LLL dd, y", {
+                    locale: ptBR,
+                  })}{" "}
+                  -{" "}
+                  {format(date.to, "LLL dd, y", {
+                    locale: ptBR,
+                  })}
+                </>
+              ) : (
+                format(date.from, "LLL dd, y")
+              )
+            ) : (
+              <span>Pick a date</span>
+            )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent
-          className="w-auto p-0"
-          align="start"
-          onInteractOutside={(e) => {
-            if (isSelectingRange) e.preventDefault();
-          }}
-        >
+        <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             mode="range"
-            selected={range}
-            onSelect={handleSelect}
-            numberOfMonths={numberOfMonths}
+            defaultMonth={date?.from}
+            selected={date}
+            onSelect={(date) => {
+              handleDateSelect(date);
+              setOpen(false);
+            }}
+            numberOfMonths={2}
             locale={ptBR}
-            disabled={disabled}
-            captionLayout="dropdown"
           />
         </PopoverContent>
       </Popover>
