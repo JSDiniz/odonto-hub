@@ -71,7 +71,7 @@ export function AppointmentsChart({ dailyAppointmentsDate }: RevenueChartProps) 
     return (
         <Card>
             <CardHeader className="flex flex-row items-center gap-2">
-                <DollarSign />
+                <DollarSign className="text-muted-foreground"/>
                 <CardTitle>
                     Agendamentos e Faturamento
                 </CardTitle>

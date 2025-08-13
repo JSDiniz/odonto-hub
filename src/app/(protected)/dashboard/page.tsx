@@ -23,7 +23,10 @@ import StatsCards from "./_components/stats-cards";
 import { AppointmentsChart } from "./_components/appointments-chart";
 import { TopDoctores } from "./_components/top-doctors";
 import { TopSpecialties } from "./_components/top-specialties";
-
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Calendar } from "lucide-react";
+import { DataTable } from "@/components/ui/data-table";
+import { appointmentsColumns } from "../appointments/_components/table-columns";
 
 interface DashboardPrps {
   searchParams: Promise<{
@@ -54,12 +57,13 @@ const Dashboard = async ({ searchParams }: DashboardPrps) => {
   }
 
   const [
-    [totalRevenue], 
-    [totalAppointments], 
-    [totalPatiets], 
-    [totalDoctores], 
+    [totalRevenue],
+    [totalAppointments],
+    [totalPatiets],
+    [totalDoctores],
     topDoctores,
-    topSpecialties
+    topSpecialties,
+    todayAppointments
   ] =
     await Promise.all([
       db
@@ -134,7 +138,18 @@ const Dashboard = async ({ searchParams }: DashboardPrps) => {
           ),
         )
         .groupBy(doctors.specialty)
-        .orderBy(desc(count(appointments.id)))
+        .orderBy(desc(count(appointments.id))),
+      db.query.appointments.findMany({
+        where: and(
+          eq(appointments.clinicId, session.user.clinic.id),
+          gte(appointments.date, new Date()),
+          lte(appointments.date, new Date())
+        ),
+        with: {
+          patient: true,
+          doctors: true,
+        }
+      })
     ]);
 
   const chartStartDate = dayjs().subtract(10, "days").startOf("day").toDate();
@@ -186,8 +201,23 @@ const Dashboard = async ({ searchParams }: DashboardPrps) => {
         </div>
 
         <div className="grid grid-cols-[2.25fr_1fr] gap-4">
-          
-          <TopSpecialties topSpecialties={topSpecialties}/>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <Calendar className="text-muted-foreground" />
+                <CardTitle className="test-base">
+                  Agendamentos de hoje
+                </CardTitle>
+              </div>
+            </CardHeader>
+
+            <CardContent>
+              <DataTable columns={appointmentsColumns} data={todayAppointments} />
+            </CardContent>
+          </Card>
+
+          <TopSpecialties topSpecialties={topSpecialties} />
         </div>
       </PageContent>
     </PageContainer>
