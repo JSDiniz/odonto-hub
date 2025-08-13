@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { and, count, eq, gte, lte, sum } from "drizzle-orm";
+import { and, count, eq, gte, lte, sql, sum } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -20,6 +20,7 @@ import { auth } from "@/lib/auth";
 
 import DatePicker from "./_components/date-picker";
 import StatsCards from "./_components/stats-cards";
+import { AppointmentsChart } from "./_components/appointments-chart";
 
 interface DashboardPrps {
   searchParams: Promise<{
@@ -89,6 +90,27 @@ const Dashboard = async ({ searchParams }: DashboardPrps) => {
         .where(eq(doctors.clinicId, session.user.clinic.id)),
     ]);
 
+
+  const chartStartDate = dayjs().subtract(10, "days").startOf("day").toDate();
+  const chartEndDate = dayjs().add(10, "days").startOf("day").toDate();
+
+  const dailyAppointmentsDate = await db.select({
+    date: sql<string>`DATE(${appointments.date})`.as("date"),
+    appointments: count(appointments.id),
+    revenue:
+      sql<number>`COALESCE(SUM(${appointments.appointmentPriceInCents}), 0)`.as("revenue")
+  })
+    .from(appointments)
+    .where(
+      and(
+        eq(appointments.clinicId, session.user.clinic.id),
+        gte(appointments.date, chartStartDate),
+        lte(appointments.date, chartEndDate)
+      )
+    )
+    .groupBy(sql`DATE(${appointments.date})`)
+    .orderBy(sql`DATE(${appointments.date})`);
+
   return (
     <PageContainer>
       <PageHeader>
@@ -111,6 +133,10 @@ const Dashboard = async ({ searchParams }: DashboardPrps) => {
           totalPatiets={totalPatiets?.total ?? 0}
           totalDoctores={totalDoctores?.total ?? 0}
         />
+
+        <div className="grid grid-cols-[2.25fr_1fr]">
+          <AppointmentsChart dailyAppointmentsDate={dailyAppointmentsDate} />
+        </div>
       </PageContent>
     </PageContainer>
   );
