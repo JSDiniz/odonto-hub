@@ -1,8 +1,6 @@
-import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { DataTable } from "@/components/ui/data-table";
 import {
   PageActions,
   PageContainer,
@@ -12,8 +10,6 @@ import {
   PageHeaderContent,
   PageTitle,
 } from "@/components/ui/page-container";
-import { db } from "@/db";
-import { patients } from "@/db/schema/patients";
 import { auth } from "@/lib/auth";
 
 import { SubscriptionPlan } from "./_components/subscription-plan";
@@ -23,17 +19,13 @@ const Subscription = async () => {
     headers: await headers(),
   });
 
-  if (!session?.user) {
-    redirect("/authentication");
+  if (!session) {
+    redirect("/login");
   }
 
   if (!session?.user.clinic) {
     redirect("/clinic-form");
   }
-
-  const userPatients = await db.query.patients.findMany({
-    where: eq(patients.clinicId, session?.user?.clinic.id),
-  });
 
   return (
     <PageContainer>
@@ -48,7 +40,10 @@ const Subscription = async () => {
         </PageActions>
       </PageHeader>
       <PageContent>
-        <SubscriptionPlan />
+        <SubscriptionPlan
+          active={session.user.plan === "essential"}
+          userEmail={session.user.email}
+        />
       </PageContent>
     </PageContainer>
   );

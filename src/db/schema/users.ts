@@ -7,6 +7,9 @@ export const users = pgTable("users", {
   phone: text("phone"),
   image: text("image"),
   emailVerified: boolean("email_verified").notNull(),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  plan: text("plan"),
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at")
     .defaultNow()
