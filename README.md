@@ -1,40 +1,66 @@
-<<<<<<< HEAD
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Odonto Hub
 
-## Getting Started
+Odonto Hub é uma plataforma web para gestão de clínicas odontológicas, desenvolvida com Next.js, React, Drizzle ORM e PostgreSQL. O sistema oferece recursos para controle de pacientes, agendamentos, médicos, clínicas e assinaturas, proporcionando uma visão completa e centralizada das operações da clínica.
 
-First, run the development server:
+## Funcionalidades
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Dashboard**: Visão geral das principais métricas da clínica, como faturamento, agendamentos, pacientes e médicos.
+- **Gestão de Agendamentos**: Criação, visualização e gerenciamento de consultas odontológicas.
+- **Gestão de Pacientes**: Cadastro, listagem e gerenciamento de pacientes da clínica.
+- **Gestão de Médicos**: Cadastro, listagem e gerenciamento dos profissionais da clínica.
+- **Gestão de Clínicas**: Cadastro e configuração de informações da clínica.
+- **Assinaturas**: Gerenciamento de planos de assinatura via Stripe.
+- **Autenticação**: Controle de acesso seguro para usuários da clínica.
+- **Relatórios e Gráficos**: Visualização de dados em gráficos e tabelas interativas.
+- **Responsividade**: Interface adaptada para diferentes dispositivos.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tecnologias Utilizadas
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Next.js** (App Router)
+- **React 19**
+- **TypeScript**
+- **Drizzle ORM** (PostgreSQL)
+- **Stripe** (pagamentos e assinaturas)
+- **React Query**
+- **Radix UI**
+- **Tailwind CSS**
+- **Zod** (validação)
+- **Lucide React** (ícones)
+- **Day.js / date-fns** (datas)
+- **Recharts** (gráficos)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Como rodar o projeto
 
-## Learn More
+1. Instale as dependências:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm install
+   # ou
+   yarn install
+   # ou
+   pnpm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Configure as variáveis de ambiente (exemplo: banco de dados, Stripe, etc).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Rode o servidor de desenvolvimento:
 
-## Deploy on Vercel
+   ```bash
+   npm run dev
+   # ou
+   yarn dev
+   # ou
+   pnpm dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. Acesse [http://localhost:3000](http://localhost:3000) no navegador.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-=======
-# odonto-hub
->>>>>>> 8d1bba82c8e56220aed6857b513b1e38f3f73082
+## Estrutura de Pastas
+
+- `src/app/`: Páginas e rotas da aplicação.
+- `src/components/`: Componentes reutilizáveis de UI.
+- `src/db/`: Configuração do banco de dados e schemas.
+- `src/data/`: Funções de acesso a dados.
+- `src/hooks/`: Hooks customizados.
+- `src/lib/`: Bibliotecas auxiliares.
+- `src/providers/`: Providers de contexto.
