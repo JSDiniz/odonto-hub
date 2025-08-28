@@ -22,7 +22,7 @@ Odonto Hub é uma plataforma web para gestão de clínicas odontológicas, desen
 - **Drizzle ORM** (PostgreSQL)
 - **Stripe** (pagamentos e assinaturas)
 - **React Query**
-- **Radix UI**
+- **Shadcn UI**
 - **Tailwind CSS**
 - **Zod** (validação)
 - **Lucide React** (ícones)
