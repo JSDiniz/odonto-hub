@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import * as schema from "@/db/schema/schema";
-import { usersToClinics } from "@/db/schema/schema";
+import { users, usersToClinics } from "@/db/schema/schema";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -21,13 +21,19 @@ export const auth = betterAuth({
   },
   plugins: [
     customSession(async ({ user, session }) => {
-      const clinics = await db.query.usersToClinics.findMany({
-        where: eq(usersToClinics.userId, user.id),
-        with: {
-          clinic: true,
-          user: true,
-        },
-      });
+      const [userData, clinics] = await Promise.all([
+        db.query.users.findFirst({
+          where: eq(users.id, user.id),
+        }),
+
+        db.query.usersToClinics.findMany({
+          where: eq(usersToClinics.userId, user.id),
+          with: {
+            clinic: true,
+            user: true,
+          },
+        }),
+      ]);
 
       //TODO: Ao adaptar para o usuário ter multiplas clínicas, deve-se mudar esse código
       const clinic = clinics?.[0];
@@ -35,7 +41,7 @@ export const auth = betterAuth({
       return {
         user: {
           ...user,
-          plan: clinic?.user?.plan,
+          plan: userData?.plan,
           clinic: clinic?.clinicId
             ? {
                 id: clinic?.clinicId,

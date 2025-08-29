@@ -2,7 +2,6 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import {
-  PageActions,
   PageContainer,
   PageContent,
   PageDescription,
@@ -19,8 +18,8 @@ const Subscription = async () => {
     headers: await headers(),
   });
 
-  if (!session) {
-    redirect("/login");
+  if (!session?.user) {
+    redirect("/authentication");
   }
 
   if (!session?.user.clinic) {
@@ -34,10 +33,6 @@ const Subscription = async () => {
           <PageTitle>Assinatura</PageTitle>
           <PageDescription>Gerencie sua assinatura.</PageDescription>
         </PageHeaderContent>
-
-        <PageActions>
-          <></>
-        </PageActions>
       </PageHeader>
       <PageContent>
         <SubscriptionPlan
