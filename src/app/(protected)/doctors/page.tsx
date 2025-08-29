@@ -1,0 +1,65 @@
+import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
+import {
+  PageActions,
+  PageContainer,
+  PageContent,
+  PageDescription,
+  PageHeader,
+  PageHeaderContent,
+  PageTitle,
+} from "@/components/ui/page-container";
+import { db } from "@/db";
+import { doctors } from "@/db/schema/doctors";
+import { auth } from "@/lib/auth";
+
+import AddDoctorButton from "./_components/add-doctor-button";
+import DoctorCard from "./_components/doctor-card";
+
+const Doctors = async () => {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session?.user) {
+    redirect("/authentication");
+  }
+
+  if (!session?.user.clinic) {
+    redirect("/clinic-form");
+  }
+
+  if (!session?.user.plan) {
+    redirect("/new-subscription");
+  }
+
+  const userDoctors = await db.query.doctors.findMany({
+    where: eq(doctors.clinicId, session?.user?.clinic.id),
+  });
+
+  return (
+    <PageContainer>
+      <PageHeader>
+        <PageHeaderContent>
+          <PageTitle>Médicos</PageTitle>
+          <PageDescription>Gerencie os Médicos da sua clínica</PageDescription>
+        </PageHeaderContent>
+
+        <PageActions>
+          <AddDoctorButton />
+        </PageActions>
+      </PageHeader>
+      <PageContent>
+        <div className="grid grid-cols-3 gap-6">
+          {userDoctors.map((doctor) => (
+            <DoctorCard key={doctor.id} doctor={doctor} />
+          ))}
+        </div>
+      </PageContent>
+    </PageContainer>
+  );
+};
+
+export default Doctors;
