@@ -2,11 +2,11 @@
 
 import {
   Calendar,
+  Gem,
   LayoutDashboard,
   LogOut,
   Stethoscope,
   Users,
-  Gem
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -104,14 +104,17 @@ const AppSidebar = () => {
           <SidebarGroupLabel>Outros</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild isActive={pathname === "/subscription"}>
-                    <Link href="/subscription">
-                      <Gem />
-                      <span>Assinatura</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname === "/subscription"}
+                >
+                  <Link href="/subscription">
+                    <Gem />
+                    <span>Assinatura</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
